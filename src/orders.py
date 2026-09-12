@@ -4,5 +4,7 @@
 def record_order(orders, key, payload):
     if not isinstance(key, str) or not key.strip():
         raise ValueError("key must be nonempty")
+    if key in orders:
+        return orders[key]
     orders[key] = dict(payload)
     return orders[key]
