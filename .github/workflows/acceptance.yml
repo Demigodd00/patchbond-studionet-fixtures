@@ -1,0 +1,20 @@
+name: PatchBond fixture CI
+on: push
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fetch exact commit
+        env:
+          PATCH_REPOSITORY: ${{ github.repository }}
+          PATCH_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "https://github.com/${PATCH_REPOSITORY}.git"
+          git fetch --depth=1 origin "$PATCH_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$PATCH_SHA"
+      - name: Run frozen smoke tests
+        run: python3 -m unittest discover -s tests -v
